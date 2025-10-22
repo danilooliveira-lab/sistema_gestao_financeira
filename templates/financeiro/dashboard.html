@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2 class="mb-4">Dashboard de {{ user.username }}</h2>
+
+  <div class="row mb-4">
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-primary shadow-sm">
+              <div class="card-body">
+                  <h5 class="card-title">Saldo Atual</h5>
+                  <h3 class="card-text">R$ {{ saldo|floatformat:2 }}</h3>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-success shadow-sm">
+              <div class="card-body">
+                  <h5 class="card-title">Total Receitas</h5>
+                  <h3 class="card-text">R$ {{ total_receitas|floatformat:2 }}</h3>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-danger shadow-sm">
+              <div class="card-body">
+                  <h5 class="card-title">Total Despesas</h5>
+                  <h3 class="card-text">R$ {{ total_despesas|floatformat:2 }}</h3>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3>Extrato</h3>
+        <a href="{% url 'lista_transacoes' %}" class="btn btn-outline-primary btn-sm">Ver todas</a>
+      </div>
+      <div class="card-body">
+          <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                  <thead>
+                      <tr>
+                          <th>Descrição</th>
+                          <th>Valor</th>
+                          <th>Data</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for transacao in transacoes_recentes %}
+                          <tr>
+                              <td>{{ transacao.descricao }}</td>
+                              <td class="{% if transacao.tipo == 'receita' %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                  {% if transacao.tipo == 'despesa' %}-{% endif %}R$ {{ transacao.valor }}
+                              </td>
+                              <td>{{ transacao.data|date:"d/m/Y" }}</td>
+                          </tr>
+                      {% empty %}
+                          <tr>
+                              <td colspan="3" class="text-center">Nenhuma transação recente.</td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+{% endblock %}

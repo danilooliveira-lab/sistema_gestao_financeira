@@ -1,0 +1,45 @@
+/* static/css/style.css */
+
+/*
+ * Este CSS serve como "ponte" entre o Django e o Bootstrap.
+ * O Django renderiza formulários como <p><label>...</label><input...></p>
+ * Este CSS força esses inputs a parecerem campos de formulário do Bootstrap.
+*/
+
+/* Aplica o estilo de .form-control do Bootstrap aos inputs gerados pelo Django */
+form p input,
+form p select {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    margin-top: 0.5rem; /* Adiciona espaço acima do input */
+}
+
+/* Esconde os <p> em volta dos campos para um visual mais limpo */
+form p {
+    margin-bottom: 1rem;
+}
+
+/* Garante que os labels fiquem em negrito */
+form p label {
+    font-weight: 500;
+}
+
+/* Ajusta o layout do formulário de login/registro */
+.form-login-register {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 0.5rem;
+}

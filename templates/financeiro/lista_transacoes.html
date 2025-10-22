@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Minhas Transações</h2>
+    <a href="{% url 'adicionar_transacao' %}" class="btn btn-primary">+ Adicionar Transação</a>
+  </div>
+
+  <div class="card shadow-sm">
+      <div class="card-body">
+          <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transacao in transacoes %}
+                        <tr>
+                            <td>{{ transacao.descricao }}</td>
+                            
+                            <td class="{% if transacao.tipo == 'receita' %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                {% if transacao.tipo == 'despesa' %}-{% endif %}R$ {{ transacao.valor }}
+                            </td>
+
+                            <td>
+                                <span class="badge {% if transacao.tipo == 'receita' %}bg-success-subtle text-success-emphasis{% else %}bg-danger-subtle text-danger-emphasis{% endif %}">
+                                    {{ transacao.get_tipo_display }}
+                                </span>
+                            </td>
+                            <td>{{ transacao.categoria.nome|default:"-" }}</td>
+                            <td>{{ transacao.data|date:"d/m/Y" }}</td>
+                            <td>
+                                <form action="{% url 'deletar_transacao' transacao.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
+                                        Deletar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center p-4">Nenhuma transação encontrada.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+{% endblock %}
