@@ -1,12 +1,93 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
 
 {% block content %}
-  <div class="form-login-register">
-    <h2 class="text-center mb-4">Login</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }} 
-      <button type="submit" class="btn btn-primary w-100 mt-3">Entrar</button>
-    </form>
-  </div>
+<div class="container">
+    <h1 class="text-center mb-4" style="margin-top: 2rem;">Controle Financeiro</h1>
+    <div class="text-center mb-5">
+        <img src="{% static 'img/devices-png.png' %}" alt="Dispositivos" class="img-fluid" style="max-width: 600px; height: auto;">
+    </div>
+    <div class="form-login-register">
+        <h2 class="mb-4 text-center">Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
+        <p class="text-center mt-3">
+            Não tem uma conta? <a href="{% url 'register' %}">Registre-se aqui</a>.
+        </p>
+    </div>
+
+    <div class="finance-chart-container mt-5">
+        <h3 class="chart-title">Visão Geral Financeira (Exemplo)</h3>
+        <div class="finance-chart">
+            <canvas id="myBarChart"></canvas>
+        </div>
+        <div class="chart-legend">
+            <div class="chart-legend-item">
+                <span class="chart-legend-color revenue"></span> Receitas
+            </div>
+            <div class="chart-legend-item">
+                <span class="chart-legend-color expense"></span> Despesas
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('myBarChart').getContext('2d');
+        const myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Receitas',
+                    data: [1200, 1900, 3000, 5000, 2300, 3000],
+                    backgroundColor: '#28a745', // Verde para receitas
+                    borderColor: '#28a745',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Despesas',
+                    data: [800, 1000, 2000, 3500, 1800, 2500],
+                    backgroundColor: '#dc3545', // Vermelho para despesas
+                    borderColor: '#dc3545',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Valor (R$)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Mês'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // A legenda será customizada via HTML
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
