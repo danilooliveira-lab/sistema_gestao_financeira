@@ -7,7 +7,8 @@
 <div class="container">
     <h1 class="text-center mb-4" style="margin-top: 2rem;">Controle Financeiro</h1>
     <div class="text-center mb-5">
-        <img src="{% static 'img/devices-png.png' %}" alt="Dispositivos" class="img-fluid" style="max-width: 600px; height: auto;">
+        <img src="{% static 'img/devices-png.png' %}" alt="Dispositivos" class="img-fluid"
+            style="max-width: 600px; height: auto;">
     </div>
     <div class="form-login-register">
         <h2 class="mb-4 text-center">Login</h2>
@@ -39,7 +40,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('myBarChart').getContext('2d');
         const myBarChart = new Chart(ctx, {
             type: 'bar',
@@ -80,7 +81,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false // A legenda será customizada via HTML
+                        display: false
                     },
                     title: {
                         display: false

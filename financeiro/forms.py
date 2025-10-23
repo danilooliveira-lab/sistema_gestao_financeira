@@ -1,13 +1,12 @@
-# financeiro/forms.py
 from django import forms
-from .models import Categoria, Transacao # Adiciona Transacao
+from .models import Categoria, Transacao
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
         fields = ['nome']
 
-# Novo formulário de Transação
+
 class TransacaoForm(forms.ModelForm):
     class Meta:
         model = Transacao

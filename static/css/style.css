@@ -1,5 +1,3 @@
-/* static/css/style.css */
-
 /*
  * Este CSS serve como "ponte" entre o Django e o Bootstrap.
  * O Django renderiza formulários como <p><label>...</label><input...></p>
@@ -21,7 +19,8 @@ form p select {
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    margin-top: 0.5rem; /* Adiciona espaço acima do input */
+    margin-top: 0.5rem;
+    /* Adiciona espaço acima do input */
 }
 
 /* Esconde os <p> em volta dos campos para um visual mais limpo */
@@ -29,7 +28,7 @@ form p {
     margin-bottom: 1rem;
 }
 
-/* Garante que os labels fiquem em negrito */
+/* labels em negrito */
 form p label {
     font-weight: 500;
 }

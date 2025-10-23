@@ -1,4 +1,3 @@
-# financeiro/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -11,7 +10,7 @@ from django.db.models import Sum # <-- IMPORT FINAL PARA O DASHBOARD
 from .models import Categoria, Transacao 
 from .forms import CategoriaForm, TransacaoForm 
 
-# Módulo 1: Registro
+
 class RegisterView(generic.CreateView):
     form_class = UserCreationForm
     template_name = 'registration/register.html'
@@ -23,7 +22,7 @@ class RegisterView(generic.CreateView):
         login(self.request, user)
         return response
 
-# --- NOVA VIEW (MÓDULO 2) ---
+
 @login_required
 def dashboard(request):
     transacoes = Transacao.objects.filter(usuario=request.user)
@@ -45,7 +44,7 @@ def dashboard(request):
     return render(request, 'financeiro/dashboard.html', context)
 
 
-# Módulo 4: Gerenciar Categorias
+
 @login_required
 def gerenciar_categorias(request):
     if request.method == 'POST':
@@ -64,7 +63,7 @@ def gerenciar_categorias(request):
     context = { 'form': form, 'categorias': categorias }
     return render(request, 'financeiro/categorias.html', context)
 
-# Módulo 4: Deletar Categoria
+
 @login_required
 def deletar_categoria(request, id):
     try:
@@ -74,13 +73,13 @@ def deletar_categoria(request, id):
         pass
     return redirect('gerenciar_categorias')
 
-# Módulo 3: Listar Transações
+
 @login_required
 def listar_transacoes(request):
     transacoes = Transacao.objects.filter(usuario=request.user).order_by('-data')
     return render(request, 'financeiro/lista_transacoes.html', {'transacoes': transacoes})
 
-# Módulo 3: Adicionar Transação
+
 @login_required
 def adicionar_transacao(request):
     if request.method == 'POST':
@@ -95,7 +94,29 @@ def adicionar_transacao(request):
 
     return render(request, 'financeiro/form_transacao.html', {'form': form})
 
-# Módulo 3: Deletar Transação
+
+@login_required
+def editar_transacao(request, id):
+    try:
+        transacao = Transacao.objects.get(id=id, usuario=request.user)
+    except Transacao.DoesNotExist:
+        return redirect('lista_transacoes')
+
+    if request.method == 'POST':
+        form = TransacaoForm(request.POST, user=request.user, instance=transacao)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_transacoes')
+    else:
+        form = TransacaoForm(user=request.user, instance=transacao)
+
+    context = {
+        'form': form,
+        'form_title': 'Editar Transação'
+    }
+    return render(request, 'financeiro/form_transacao.html', context)
+
+
 @login_required
 def deletar_transacao(request, id):
     try:
