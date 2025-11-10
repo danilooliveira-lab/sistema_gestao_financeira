@@ -107,16 +107,16 @@ python manage.py runserver
 **Abaixo estão algumas capturas de tela do sistema em funcionamento:**
 
 **🔐 Tela de Login**
-![Tela de login](\sistema_gestao_financeira\static\img\readme\login.png)
+![Tela de Login](./static/img/readme/login.png)
 
 **📊 Dashboard**
-![Dashboard](\sistema_gestao_financeira\static\img\readme\dashboard.png)
+![Dashboard](./static/img/readme/dashboard.png)
 
 **💸 Aba de Transações**
-![Transacoes](\sistema_gestao_financeira\static\img\readme\transacoes.png)
+![Transações](./static/img/readme/transacoes.png)
 
 **🗂️ Aba de Categorias**
-![Categorias](\sistema_gestao_financeira\static\img\readme\categorias.png)
+![Categorias](./static/img/readme/categorias.png)
 
 ## 🧑‍💻 Autores
 
