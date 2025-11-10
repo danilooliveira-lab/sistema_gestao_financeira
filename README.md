@@ -65,8 +65,8 @@ Ele busca apoiar **jovens trabalhadores e microempreendedores**, ajudando-os a t
 
 ## 1️⃣ Clonar o Repositório
 ```bash
-git clone https://github.com/seu-usuario/controle-financeiro-mvp.git
-cd controle-financeiro-mvp
+git clone https://github.com/danilooliveira-lab/sistema_gestao_financeira
+cd sistema_gestao_financeira ou o diretorio escolhido
 ```
 
 ### 2️⃣ Criar e Ativar o Ambiente Virtual (Venv)
