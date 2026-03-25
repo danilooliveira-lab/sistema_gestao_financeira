@@ -1,0 +1,155 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Guia de uso | Gestao Financeira{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="eyebrow">Guia de uso</div>
+    <h1 class="hero-title">Orientacao clara, sem poluir a tela principal.</h1>
+    <p class="hero-copy">Esta area concentra os primeiros passos, explicacoes de logica e exemplos praticos de uso. O dashboard fica mais limpo, mas a ajuda continua disponivel quando voce precisar.</p>
+</section>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <section class="surface-card h-100">
+            <div class="card-head">
+                <div>
+                    <h2 class="section-title">Primeiros passos</h2>
+                    <p>Siga esta ordem para o sistema fazer sentido desde o primeiro uso.</p>
+                </div>
+            </div>
+            <div class="card-body-pad">
+                <div class="stack-list">
+                    {% for passo in passos_iniciais %}
+                    <div class="stack-item">
+                        <div>
+                            <strong>{{ forloop.counter }}. {{ passo.titulo }}</strong>
+                            <small>{{ passo.descricao }}</small>
+                        </div>
+                        <a href="{% url passo.acao %}" class="btn btn-outline-primary btn-sm stack-action">{{ passo.rotulo }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-4">
+        <section class="surface-card h-100">
+            <div class="card-head">
+                <div>
+                    <h2 class="section-title">Resumo atual</h2>
+                    <p>Uma leitura curta da sua base hoje.</p>
+                </div>
+            </div>
+            <div class="card-body-pad">
+                <div class="stack-list">
+                    <div class="stack-item">
+                        <div>
+                            <strong>Contas ativas</strong>
+                            <small>Estrutura disponivel para lancamentos.</small>
+                        </div>
+                        <span class="progress-chip">{{ contas_ativas }}</span>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Categorias</strong>
+                            <small>Base de classificacao para relatorios.</small>
+                        </div>
+                        <span class="progress-chip">{{ categorias_total }}</span>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Transacoes</strong>
+                            <small>Movimentacoes ja registradas.</small>
+                        </div>
+                        <span class="progress-chip">{{ transacoes_total }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <section class="surface-card h-100">
+            <div class="card-head">
+                <div>
+                    <h2 class="section-title">Como pensar um lancamento</h2>
+                    <p>Use a logica abaixo para nao se perder entre conta, descricao e categoria.</p>
+                </div>
+            </div>
+            <div class="card-body-pad">
+                <div class="stack-list">
+                    <div class="stack-item">
+                        <div>
+                            <strong>Conta</strong>
+                            <small>De onde o dinheiro saiu ou entrou. Ex.: Nubank, Carteira, Caixa.</small>
+                        </div>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Descricao</strong>
+                            <small>O evento real. Ex.: Conta de luz abril, Mercado do mes, Salario.</small>
+                        </div>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Categoria</strong>
+                            <small>O grupo para leitura posterior. Ex.: Moradia e contas, Alimentacao, Transporte.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-6">
+        <section class="surface-card h-100">
+            <div class="card-head">
+                <div>
+                    <h2 class="section-title">Exemplo pratico</h2>
+                    <p>Conta de luz sem complicar o fluxo.</p>
+                </div>
+            </div>
+            <div class="card-body-pad">
+                <div class="list-callout mb-3">
+                    Nao crie uma categoria chamada "Conta de luz abril". Isso gera bagunca no futuro.
+                </div>
+                <div class="stack-list">
+                    <div class="stack-item">
+                        <div>
+                            <strong>Descricao</strong>
+                            <small>Conta de luz abril</small>
+                        </div>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Conta</strong>
+                            <small>Nubank ou a conta que pagou a despesa</small>
+                        </div>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Categoria</strong>
+                            <small>Moradia e contas</small>
+                        </div>
+                    </div>
+                    <div class="stack-item">
+                        <div>
+                            <strong>Resultado</strong>
+                            <small>Voce registra rapido agora e consegue filtrar melhor depois.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline-actions mt-4">
+                    <a href="{% url 'adicionar_transacao' %}" class="btn btn-primary">Testar esse fluxo</a>
+                    <a href="{% url 'gerenciar_categorias' %}" class="btn btn-outline-secondary">Ajustar categorias</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+

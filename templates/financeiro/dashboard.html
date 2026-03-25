@@ -1,211 +1,246 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Dashboard | Gestao Financeira{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="mb-1">Dashboard de {{ user.username }}</h2>
-        <p class="text-muted mb-0">Agora o projeto acompanha contas, patrimonio, planejamento mensal e metas.</p>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{% url 'gerenciar_orcamentos' %}" class="btn btn-outline-secondary">Orcamentos</a>
-        <a href="{% url 'gerenciar_metas' %}" class="btn btn-outline-primary">Metas</a>
-        <a href="{% url 'adicionar_transacao' %}" class="btn btn-primary">Nova transacao</a>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card text-white bg-primary shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="card-title">Patrimonio Atual</h5>
-                <h3 class="card-text">R$ {{ patrimonio_total|floatformat:2 }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-white bg-success shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="card-title">Receitas do Mes</h5>
-                <h3 class="card-text">R$ {{ receitas_mes|floatformat:2 }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-white bg-danger shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="card-title">Despesas do Mes</h5>
-                <h3 class="card-text">R$ {{ despesas_mes|floatformat:2 }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-white bg-dark shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="card-title">Saldo do Mes</h5>
-                <h3 class="card-text">R$ {{ saldo_mes|floatformat:2 }}</h3>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-lg-4 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="h5 mb-0">Contas</h3>
-                <span class="badge text-bg-dark">{{ contas_ativas }} ativas</span>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle">
-                        <thead>
-                            <tr>
-                                <th>Conta</th>
-                                <th>Tipo</th>
-                                <th class="text-end">Saldo estimado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for conta in contas_resumo %}
-                            <tr>
-                                <td>{{ conta.nome }}</td>
-                                <td>{{ conta.get_tipo_display }}</td>
-                                <td class="text-end">R$ {{ conta.saldo_inicial|add:conta.movimentacao|floatformat:2 }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">Nenhuma conta cadastrada.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<section class="page-hero">
+    <div class="eyebrow">Visao Geral</div>
+    <div class="row g-4 align-items-end">
+        <div class="col-lg-8">
+            <h1 class="hero-title">Seu painel financeiro agora parece produto de verdade.</h1>
+            <p class="hero-copy">Acompanhe patrimonio, desempenho do mes, limites de gastos e metas em uma interface mais clara, responsiva e preparada para uso continuo.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <strong>{{ contas_ativas }}</strong>
+                    <span>contas ativas</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>{{ orcamentos_resumo|length }}</strong>
+                    <span>orcamentos no mes</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>{{ metas_resumo|length }}</strong>
+                    <span>metas acompanhadas</span>
                 </div>
             </div>
         </div>
+        <div class="col-lg-4">
+            <div class="hero-actions justify-content-lg-end">
+                <a href="{% url 'gerenciar_orcamentos' %}" class="btn btn-outline-secondary">Orcamentos</a>
+                <a href="{% url 'gerenciar_metas' %}" class="btn btn-outline-primary">Metas</a>
+                <a href="{% url 'adicionar_transacao' %}" class="btn btn-primary">Nova transacao</a>
+            </div>
+        </div>
     </div>
-    <div class="col-lg-4 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="h5 mb-0">Orcamentos {{ mes_atual }}/{{ ano_atual }}</h3>
+</section>
+
+{% if precisa_onboarding %}
+<section class="guide-banner mb-4">
+    <div>
+        <strong>Primeiro acesso ou duvida de uso?</strong>
+        <span>O guia foi movido para uma area propria para nao atrapalhar o fluxo visual do dashboard.</span>
+    </div>
+    <div class="inline-actions">
+        <a href="{% url 'guia_uso' %}" class="btn btn-outline-secondary btn-sm">Ver primeiros passos</a>
+        <a href="{% url 'adicionar_transacao' %}" class="btn btn-primary btn-sm">Lancar transacao</a>
+    </div>
+</section>
+{% endif %}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <article class="metric-card brand">
+            <div class="metric-label">Patrimonio atual</div>
+            <div class="metric-value">R$ {{ patrimonio_total|floatformat:2 }}</div>
+            <p class="metric-trend">Saldo inicial + movimentacao acumulada.</p>
+        </article>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <article class="metric-card success">
+            <div class="metric-label">Receitas do mes</div>
+            <div class="metric-value">R$ {{ receitas_mes|floatformat:2 }}</div>
+            <p class="metric-trend">Entradas registradas no periodo atual.</p>
+        </article>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <article class="metric-card danger">
+            <div class="metric-label">Despesas do mes</div>
+            <div class="metric-value">R$ {{ despesas_mes|floatformat:2 }}</div>
+            <p class="metric-trend">Saidas monitoradas no periodo atual.</p>
+        </article>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <article class="metric-card dark">
+            <div class="metric-label">Saldo do mes</div>
+            <div class="metric-value">R$ {{ saldo_mes|floatformat:2 }}</div>
+            <p class="metric-trend">Resultado liquido entre receitas e despesas.</p>
+        </article>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <section class="surface-card">
+            <div class="card-head">
+                <div>
+                    <h3 class="section-title">Contas</h3>
+                    <p>Saldos estimados por origem financeira.</p>
+                </div>
+                <span class="pill-badge pill-neutral">{{ contas_ativas }} ativas</span>
+            </div>
+            <div class="card-body-pad">
+                <div class="stack-list">
+                    {% for conta in contas_resumo %}
+                    <div class="stack-item">
+                        <div>
+                            <strong>{{ conta.nome }}</strong>
+                            <small>{{ conta.get_tipo_display }}</small>
+                        </div>
+                        <div class="text-end">
+                            <strong>R$ {{ conta.saldo_inicial|add:conta.movimentacao|floatformat:2 }}</strong>
+                            <small>saldo estimado</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">Nenhuma conta cadastrada.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-4">
+        <section class="surface-card">
+            <div class="card-head">
+                <div>
+                    <h3 class="section-title">Orcamentos {{ mes_atual }}/{{ ano_atual }}</h3>
+                    <p>Consumo dos limites do mes por categoria.</p>
+                </div>
                 <a href="{% url 'gerenciar_orcamentos' %}" class="btn btn-outline-primary btn-sm">Abrir</a>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
+            <div class="card-body-pad">
+                <div class="stack-list">
                     {% for item in orcamentos_resumo %}
-                    <li class="list-group-item">
-                        <div class="d-flex justify-content-between">
+                    <div class="stack-item">
+                        <div>
                             <strong>{{ item.orcamento.categoria.nome }}</strong>
-                            <span class="{% if item.excedido %}text-danger{% else %}text-muted{% endif %}">
-                                {{ item.percentual|floatformat:0 }}%
-                            </span>
+                            <small>Gasto: R$ {{ item.gasto|floatformat:2 }} / Limite: R$ {{ item.orcamento.limite|floatformat:2 }}</small>
                         </div>
-                        <small class="text-muted">Gasto: R$ {{ item.gasto|floatformat:2 }} / Limite: R$ {{ item.orcamento.limite|floatformat:2 }}</small>
-                    </li>
+                        <span class="progress-chip {% if item.excedido %}warning{% endif %}">{{ item.percentual|floatformat:0 }}%</span>
+                    </div>
                     {% empty %}
-                    <li class="list-group-item text-center text-muted">Nenhum orcamento cadastrado para este mes.</li>
+                    <div class="empty-state">Nenhum orcamento cadastrado para este mes.</div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
-    <div class="col-lg-4 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="h5 mb-0">Metas</h3>
+
+    <div class="col-lg-4">
+        <section class="surface-card">
+            <div class="card-head">
+                <div>
+                    <h3 class="section-title">Metas</h3>
+                    <p>Progresso dos objetivos financeiros atuais.</p>
+                </div>
                 <a href="{% url 'gerenciar_metas' %}" class="btn btn-outline-primary btn-sm">Abrir</a>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
+            <div class="card-body-pad">
+                <div class="stack-list">
                     {% for item in metas_resumo %}
-                    <li class="list-group-item">
-                        <div class="d-flex justify-content-between">
+                    <div class="stack-item">
+                        <div>
                             <strong>{{ item.meta.nome }}</strong>
-                            <span class="text-muted">{{ item.percentual|floatformat:0 }}%</span>
+                            <small>Atual: R$ {{ item.meta.valor_atual|floatformat:2 }} / Alvo: R$ {{ item.meta.valor_alvo|floatformat:2 }}</small>
                         </div>
-                        <small class="text-muted">Atual: R$ {{ item.meta.valor_atual|floatformat:2 }} / Alvo: R$ {{ item.meta.valor_alvo|floatformat:2 }}</small>
-                    </li>
+                        <span class="progress-chip">{{ item.percentual|floatformat:0 }}%</span>
+                    </div>
                     {% empty %}
-                    <li class="list-group-item text-center text-muted">Nenhuma meta cadastrada.</li>
+                    <div class="empty-state">Nenhuma meta cadastrada.</div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-lg-6 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Historico mensal</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle">
-                        <thead>
-                            <tr>
-                                <th>Mes</th>
-                                <th>Receitas</th>
-                                <th>Despesas</th>
-                                <th>Saldo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in historico_mensal %}
-                            <tr>
-                                <td>{{ item.mes|date:"m/Y" }}</td>
-                                <td class="text-success">R$ {{ item.receitas|floatformat:2 }}</td>
-                                <td class="text-danger">R$ {{ item.despesas|floatformat:2 }}</td>
-                                <td>R$ {{ item.saldo|floatformat:2 }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">Sem historico suficiente.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<div class="row g-4">
+    <div class="col-xl-6">
+        <section class="table-card">
+            <div class="card-head">
+                <div>
+                    <h3 class="section-title">Historico mensal</h3>
+                    <p>Leitura consolidada das movimentacoes mais recentes.</p>
                 </div>
             </div>
-        </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Receitas</th>
+                            <th>Despesas</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in historico_mensal %}
+                        <tr>
+                            <td>{{ item.mes|date:"m/Y" }}</td>
+                            <td class="text-success fw-semibold">R$ {{ item.receitas|floatformat:2 }}</td>
+                            <td class="text-danger fw-semibold">R$ {{ item.despesas|floatformat:2 }}</td>
+                            <td class="fw-semibold">R$ {{ item.saldo|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4"><div class="empty-state">Sem historico suficiente para exibir.</div></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
-    <div class="col-lg-6 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="h5 mb-0">Extrato recente</h3>
+
+    <div class="col-xl-6">
+        <section class="table-card">
+            <div class="card-head">
+                <div>
+                    <h3 class="section-title">Extrato recente</h3>
+                    <p>Ultimas movimentacoes registradas no sistema.</p>
+                </div>
                 <a href="{% url 'lista_transacoes' %}" class="btn btn-outline-primary btn-sm">Ver todas</a>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Descricao</th>
-                                <th>Conta</th>
-                                <th>Valor</th>
-                                <th>Data</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for transacao in transacoes_recentes %}
-                            <tr>
-                                <td>{{ transacao.descricao }}</td>
-                                <td>{{ transacao.conta.nome|default:"-" }}</td>
-                                <td class="{% if transacao.tipo == 'receita' %}text-success{% else %}text-danger{% endif %} fw-bold">
-                                    {% if transacao.tipo == 'despesa' %}-{% endif %}R$ {{ transacao.valor }}
-                                </td>
-                                <td>{{ transacao.data|date:"d/m/Y" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center">Nenhuma transacao recente.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Descricao</th>
+                            <th>Conta</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transacao in transacoes_recentes %}
+                        <tr>
+                            <td>{{ transacao.descricao }}</td>
+                            <td>{{ transacao.conta.nome|default:"-" }}</td>
+                            <td class="{% if transacao.tipo == 'receita' %}text-success{% else %}text-danger{% endif %} fw-semibold">
+                                {% if transacao.tipo == 'despesa' %}-{% endif %}R$ {{ transacao.valor }}
+                            </td>
+                            <td>{{ transacao.data|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4"><div class="empty-state">Nenhuma transacao recente.</div></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </section>
     </div>
 </div>
 {% endblock %}
+

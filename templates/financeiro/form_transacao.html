@@ -1,20 +1,60 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}{{ form_title|default:"Transacao" }} | Gestao Financeira{% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-8 mx-auto">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h2>{{ form_title|default:"Adicionar Nova Transacao" }}</h2>
-      </div>
-      <div class="card-body">
-        <form method="post" class="form-container">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-primary w-100 mt-3">{{ submit_label|default:"Salvar Transacao" }}</button>
-        </form>
-      </div>
-    </div>
-  </div>
+<section class="page-hero">
+    <div class="eyebrow">Lancamento</div>
+    <h1 class="hero-title">{{ form_title|default:"Adicionar Nova Transacao" }}</h1>
+    <p class="hero-copy">Use um formulario mais claro para registrar movimentacoes com menos atrito. O sistema pode lembrar a ultima conta e categoria usadas, e voce pode criar uma categoria nova sem sair desta tela.</p>
+</section>
+
+<div class="form-layout-grid">
+    <section class="form-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Dados da transacao</h2>
+                <p>Priorize descricao, valor, data e conta. Categoria ajuda nos relatorios, mas agora pode ser resolvida no mesmo fluxo.</p>
+            </div>
+        </div>
+        <div class="card-body-pad">
+            {% if modo_rapido %}
+            <div class="list-callout mb-3">
+                Exemplo rapido: para uma conta de luz, use descricao "Conta de luz abril", valor, data, sua conta bancaria e a categoria "Moradia e contas". Se ela nao existir, digite no campo de criacao rapida e siga.
+            </div>
+            {% endif %}
+            <form method="post" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="inline-actions mt-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">{{ submit_label|default:"Salvar Transacao" }}</button>
+                    {% if modo_rapido %}
+                    <button type="submit" name="salvar_e_continuar" value="1" class="btn btn-outline-secondary flex-grow-1">Salvar e adicionar outra</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <aside class="helper-panel">
+        <div class="eyebrow">Guia rapido</div>
+        <h3 class="section-title">Boas praticas para manter seu painel limpo</h3>
+        <ul>
+            <li>Use a descricao para o evento real: Conta de luz, Mercado do mes, Salario de abril.</li>
+            <li>Reaproveite categorias em vez de criar uma nova a cada gasto parecido.</li>
+            <li>Associe sempre a conta correta para refletir o patrimonio real, principalmente se voce tiver varias contas.</li>
+            <li>Marque recorrencia apenas quando o lancamento fizer parte de um padrao continuo.</li>
+            <li>Use observacoes para contexto, sem sobrecarregar a descricao principal.</li>
+        </ul>
+        <hr class="helper-divider">
+        <div class="eyebrow">Atalho mental</div>
+        <h3 class="section-title">Pense em tres camadas</h3>
+        <ul>
+            <li><strong>Conta:</strong> de onde saiu ou entrou o dinheiro.</li>
+            <li><strong>Descricao:</strong> o que aconteceu no mundo real.</li>
+            <li><strong>Categoria:</strong> em qual grupo esse movimento entra para relatorio.</li>
+        </ul>
+    </aside>
 </div>
 {% endblock %}
+

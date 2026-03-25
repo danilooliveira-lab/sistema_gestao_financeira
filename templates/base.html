@@ -1,92 +1,152 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" data-bs-theme="light">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Meu Controle Financeiro{% endblock %}</title>
+    <title>{% block title %}Gestao Financeira{% endblock %}</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("atlas-theme") || "light";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+        })();
+    </script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">Controle Financeiro</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gerenciar_contas' %}">Contas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gerenciar_orcamentos' %}">Orcamentos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gerenciar_metas' %}">Metas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lista_transacoes' %}">Transacoes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gerenciar_categorias' %}">Categorias</a>
-                    </li>
-                    <li class="nav-item">
-                        <form action="{% url 'logout' %}" method="post" class="d-flex">
-                            {% csrf_token %}
-                            <span class="navbar-text text-white-50 me-2">
-                                Ola, {{ user.username }}
-                            </span>
-                            <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
-                        </form>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Cadastro</a>
-                    </li>
-                    {% endif %}
-                </ul>
+    <div class="app-shell">
+        <div class="bg-orb bg-orb-one"></div>
+        <div class="bg-orb bg-orb-two"></div>
+
+        <header class="site-header">
+            <div class="container app-container">
+                <nav class="navbar navbar-expand-xl">
+                    <a class="navbar-brand brand-mark" href="{% url 'dashboard' %}">
+                        <span class="brand-badge">AF</span>
+                        <span>
+                            <strong>Gestao Financeira</strong>
+                            <small>Painel pessoal</small>
+                        </span>
+                    </a>
+
+                    <button class="navbar-toggler nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir navegacao">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <div class="nav-content ms-auto">
+                            <ul class="navbar-nav nav-pills-grid">
+                                {% if user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'gerenciar_contas' %}active{% endif %}" href="{% url 'gerenciar_contas' %}">Contas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'gerenciar_orcamentos' %}active{% endif %}" href="{% url 'gerenciar_orcamentos' %}">Orcamentos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'gerenciar_metas' %}active{% endif %}" href="{% url 'gerenciar_metas' %}">Metas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'lista_transacoes' or request.resolver_match.url_name == 'adicionar_transacao' or request.resolver_match.url_name == 'editar_transacao' %}active{% endif %}" href="{% url 'lista_transacoes' %}">Transacoes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'gerenciar_categorias' %}active{% endif %}" href="{% url 'gerenciar_categorias' %}">Categorias</a>
+                                </li>
+                                {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" href="{% url 'register' %}">Cadastro</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+
+                            <div class="nav-utility">
+                                {% if user.is_authenticated %}
+                                <a class="btn btn-ghost-light btn-sm utility-guide {% if request.resolver_match.url_name == 'guia_uso' %}is-active{% endif %}" href="{% url 'guia_uso' %}">Guia</a>
+                                {% endif %}
+                                <button type="button" class="btn btn-ghost-light btn-sm theme-toggle" data-theme-toggle aria-label="Alternar tema">
+                                    <span data-theme-label>Modo escuro</span>
+                                </button>
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'perfil_usuario' %}" class="user-chip">
+                                    {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                                </a>
+                                <form action="{% url 'logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-ghost-light btn-sm">Sair</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </nav>
             </div>
-        </div>
-    </nav>
+        </header>
 
-    <main class="container">
-        {% if messages %}
-        <div class="mb-4">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        <main class="container app-container app-main">
+            {% if messages %}
+            <div class="alert-stack">
+                {% for message in messages %}
+                <div class="alert app-alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    <div>
+                        <strong>Atualizacao</strong>
+                        <span>{{ message }}</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+            {% endif %}
 
-        {% block content %}
-        {% endblock %}
-    </main>
-
-    <footer class="text-center text-muted mt-5 mb-3">
-        <p> </p>
-    </footer>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script>
+        (function () {
+            const root = document.documentElement;
+            const storageKey = "atlas-theme";
+            const buttons = document.querySelectorAll("[data-theme-toggle]");
+            const labels = document.querySelectorAll("[data-theme-label]");
+
+            function applyTheme(theme) {
+                root.setAttribute("data-theme", theme);
+                labels.forEach((label) => {
+                    label.textContent = theme === "dark" ? "Modo claro" : "Modo escuro";
+                });
+            }
+
+            const savedTheme = localStorage.getItem(storageKey) || "light";
+            applyTheme(savedTheme);
+
+            buttons.forEach((button) => {
+                button.addEventListener("click", function () {
+                    const nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+                    localStorage.setItem(storageKey, nextTheme);
+                    applyTheme(nextTheme);
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>
+

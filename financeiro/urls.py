@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
 
     path('', views.dashboard, name='dashboard'), 
+    path('guia/', views.guia_uso, name='guia_uso'),
+    path('perfil/', views.perfil_usuario, name='perfil_usuario'),
 
 
     path('registrar/', views.RegisterView.as_view(), name='register'),
@@ -19,6 +21,7 @@ urlpatterns = [
     
 
     path('categorias/', views.gerenciar_categorias, name='gerenciar_categorias'),
+    path('categorias/iniciais/', views.restaurar_categorias_iniciais, name='restaurar_categorias_iniciais'),
     path('categorias/deletar/<int:id>/', views.deletar_categoria, name='deletar_categoria'),
     
 

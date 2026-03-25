@@ -1,0 +1,45 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Perfil | Gestao Financeira{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="eyebrow">Perfil</div>
+    <h1 class="hero-title">Seus dados de acesso e identificacao.</h1>
+    <p class="hero-copy">Esta area permite revisar nome, email e nome de usuario. Isso deixa o cadastro menos generico e melhora a identificacao do dono da conta.</p>
+</section>
+
+<div class="form-layout-grid">
+    <section class="form-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Editar perfil</h2>
+                <p>Mantenha seus dados atualizados para o sistema ficar mais coerente e pronto para recursos futuros.</p>
+            </div>
+        </div>
+        <div class="card-body-pad">
+            <form method="post" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Salvar perfil</button>
+            </form>
+        </div>
+    </section>
+
+    <aside class="helper-panel">
+        <div class="eyebrow">Resumo</div>
+        <h3 class="section-title">Dados usados no sistema</h3>
+        <ul>
+            <li><strong>Nome:</strong> {{ user.first_name|default:"Nao informado" }} {{ user.last_name }}</li>
+            <li><strong>Email:</strong> {{ user.email|default:"Nao informado" }}</li>
+            <li><strong>Usuario:</strong> {{ user.username }}</li>
+        </ul>
+        <hr class="helper-divider">
+        <div class="eyebrow">Seguranca</div>
+        <h3 class="section-title">Acesso</h3>
+        <p class="muted-text">Se precisar trocar sua senha, use o fluxo de recuperacao na tela de login.</p>
+        <a href="{% url 'password_reset' %}" class="btn btn-outline-secondary mt-2">Recuperar senha</a>
+    </aside>
+</div>
+{% endblock %}
+

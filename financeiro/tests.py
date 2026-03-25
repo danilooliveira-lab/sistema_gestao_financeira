@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -8,13 +9,14 @@ from django.utils import timezone
 from .forms import OrcamentoMensalForm, TransacaoForm
 from .models import Categoria, Conta, MetaFinanceira, OrcamentoMensal, Transacao
 from .selectors import filtrar_transacoes, paginar_queryset, resumo_dashboard
+from .services import CATEGORIAS_INICIAIS
 
 
 class FinanceiroViewsTests(TestCase):
     def setUp(self):
         self.today = timezone.localdate()
-        self.user = User.objects.create_user(username="alice", password="senha-segura123")
-        self.other_user = User.objects.create_user(username="bob", password="senha-segura123")
+        self.user = User.objects.create_user(username="alice", password="senha-segura123", email="alice@example.com", first_name="Alice")
+        self.other_user = User.objects.create_user(username="bob", password="senha-segura123", email="bob@example.com", first_name="Bob")
         self.conta_user = Conta.objects.create(nome="Nubank", tipo="corrente", saldo_inicial="500.00", usuario=self.user)
         self.conta_other = Conta.objects.create(nome="Inter", tipo="corrente", saldo_inicial="300.00", usuario=self.other_user)
         self.categoria_user = Categoria.objects.create(nome="Salario", usuario=self.user)
@@ -57,6 +59,18 @@ class FinanceiroViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("login"), response.url)
 
+    def test_guia_uso_exige_login(self):
+        response = self.client.get(reverse("guia_uso"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
+
+    def test_perfil_exige_login(self):
+        response = self.client.get(reverse("perfil_usuario"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
+
     def test_lista_transacoes_mostra_apenas_dados_do_usuario_logado(self):
         self.client.login(username="alice", password="senha-segura123")
 
@@ -66,19 +80,60 @@ class FinanceiroViewsTests(TestCase):
         transacoes = list(response.context["transacoes"])
         self.assertEqual(transacoes, [self.transacao_user])
 
+    def test_guia_uso_renderiza_resumo_e_passos(self):
+        self.client.login(username="alice", password="senha-segura123")
+
+        response = self.client.get(reverse("guia_uso"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Primeiros passos")
+        self.assertEqual(len(response.context["passos_iniciais"]), 3)
+
+    def test_perfil_renderiza_para_usuario_logado(self):
+        self.client.login(username="alice", password="senha-segura123")
+
+        response = self.client.get(reverse("perfil_usuario"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Editar perfil")
+
+    def test_fluxo_password_reset_renderiza_formulario(self):
+        self.client.login(username="alice", password="senha-segura123")
+
+        response = self.client.get(reverse("password_reset"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Esqueci minha senha")
+
+    def test_registro_exige_email_unico(self):
+        response = self.client.post(
+            reverse("register"),
+            {
+                "first_name": "Alice",
+                "last_name": "Silva",
+                "username": "alice-nova",
+                "email": self.user.email or "alice@example.com",
+                "password1": "senha-segura-abc123",
+                "password2": "senha-segura-abc123",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ja existe uma conta com esse email.")
+
     def test_dashboard_exibe_patrimonio_com_saldo_inicial(self):
         self.client.login(username="alice", password="senha-segura123")
 
         response = self.client.get(reverse("dashboard"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["saldo_inicial_total"], self.conta_user.saldo_inicial)
-        self.assertEqual(response.context["patrimonio_total"], self.conta_user.saldo_inicial + self.transacao_user.valor)
+        self.assertEqual(response.context["saldo_inicial_total"], Decimal("500.00"))
+        self.assertEqual(response.context["patrimonio_total"], Decimal("1500.00"))
 
     def test_selector_resumo_dashboard_retorna_planejamento_e_metas(self):
         resumo = resumo_dashboard(self.user)
 
-        self.assertEqual(resumo["total_receitas"], self.transacao_user.valor)
+        self.assertEqual(resumo["total_receitas"], Decimal("1000.00"))
         self.assertEqual(len(resumo["orcamentos_resumo"]), 1)
         self.assertEqual(len(resumo["metas_resumo"]), 1)
 
@@ -177,3 +232,62 @@ class FinanceiroViewsTests(TestCase):
         response = self.client.get(reverse("adicionar_transacao"))
 
         self.assertRedirects(response, reverse("gerenciar_contas"))
+
+    def test_dashboard_cria_categorias_iniciais_para_usuario_sem_categorias(self):
+        usuario = User.objects.create_user(username="charlie", password="senha-segura123")
+        Conta.objects.create(nome="Carteira", tipo="carteira", saldo_inicial="0.00", usuario=usuario)
+        self.client.login(username="charlie", password="senha-segura123")
+
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Categoria.objects.filter(usuario=usuario).count(), len(CATEGORIAS_INICIAIS))
+
+    def test_adicionar_transacao_cria_categoria_inline(self):
+        self.client.login(username="alice", password="senha-segura123")
+
+        response = self.client.post(
+            reverse("adicionar_transacao"),
+            {
+                "conta": self.conta_user.id,
+                "descricao": "Conta de luz abril",
+                "valor": "180.50",
+                "data": self.today.isoformat(),
+                "tipo": "despesa",
+                "categoria": "",
+                "nova_categoria": "Moradia e contas",
+                "observacao": "",
+                "recorrente": "on",
+            },
+        )
+
+        self.assertRedirects(response, reverse("lista_transacoes"))
+        self.assertTrue(Categoria.objects.filter(usuario=self.user, nome="Moradia e contas").exists())
+        self.assertTrue(Transacao.objects.filter(usuario=self.user, descricao="Conta de luz abril").exists())
+
+    def test_adicionar_transacao_lembra_ultima_conta_categoria_e_tipo(self):
+        self.client.login(username="alice", password="senha-segura123")
+        categoria = Categoria.objects.create(nome="Moradia e contas", usuario=self.user)
+
+        self.client.post(
+            reverse("adicionar_transacao"),
+            {
+                "conta": self.conta_user.id,
+                "descricao": "Internet",
+                "valor": "99.90",
+                "data": self.today.isoformat(),
+                "tipo": "despesa",
+                "categoria": categoria.id,
+                "nova_categoria": "",
+                "observacao": "",
+                "recorrente": "on",
+                "salvar_e_continuar": "1",
+            },
+        )
+
+        response = self.client.get(reverse("adicionar_transacao"))
+        form = response.context["form"]
+
+        self.assertEqual(str(form["conta"].value()), str(self.conta_user.id))
+        self.assertEqual(str(form["categoria"].value()), str(categoria.id))
+        self.assertEqual(form["tipo"].value(), "despesa")

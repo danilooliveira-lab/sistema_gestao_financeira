@@ -1,94 +1,52 @@
-{% extends 'base.html' %}
-{% load static %}
+﻿{% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login | Gestao Financeira{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="text-center mb-4" style="margin-top: 2rem;">Controle Financeiro</h1>
-    <div class="text-center mb-5">
-        <img src="{% static 'img/devices-png.png' %}" alt="Dispositivos" class="img-fluid"
-            style="max-width: 600px; height: auto;">
-    </div>
-    <div class="form-login-register">
-        <h2 class="mb-4 text-center">Login</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Entrar</button>
-        </form>
-        <p class="text-center mt-3">
-            Não tem uma conta? <a href="{% url 'register' %}">Registre-se aqui</a>.
-        </p>
-    </div>
+<section class="auth-shell">
+    <aside class="auth-aside">
+        <div class="auth-display">
+            <div class="eyebrow text-white">Painel financeiro</div>
+            <h1 class="hero-title">Uma interface mais madura para acompanhar o que importa.</h1>
+            <p class="hero-copy">Organize contas, orcamentos, metas e transacoes em uma experiencia visual mais clara, elegante e pronta para evoluir.</p>
 
-    <div class="finance-chart-container mt-5">
-        <h3 class="chart-title">Visão Geral Financeira (Exemplo)</h3>
-        <div class="finance-chart">
-            <canvas id="myBarChart"></canvas>
-        </div>
-        <div class="chart-legend">
-            <div class="chart-legend-item">
-                <span class="chart-legend-color revenue"></span> Receitas
-            </div>
-            <div class="chart-legend-item">
-                <span class="chart-legend-color expense"></span> Despesas
+            <div class="auth-stat-grid">
+                <div class="auth-stat">
+                    <strong>4 fases</strong>
+                    <span>de evolucao estrutural ja consolidadas</span>
+                </div>
+                <div class="auth-stat">
+                    <strong>360deg</strong>
+                    <span>de visao entre patrimonio, gastos e objetivos</span>
+                </div>
+                <div class="auth-stat">
+                    <strong>Multi-area</strong>
+                    <span>contas, categorias, metas e planejamento</span>
+                </div>
+                <div class="auth-stat">
+                    <strong>Responsivo</strong>
+                    <span>pensado para desktop e telas menores</span>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </aside>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('myBarChart').getContext('2d');
-        const myBarChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-                datasets: [{
-                    label: 'Receitas',
-                    data: [1200, 1900, 3000, 5000, 2300, 3000],
-                    backgroundColor: '#28a745', // Verde para receitas
-                    borderColor: '#28a745',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Despesas',
-                    data: [800, 1000, 2000, 3500, 1800, 2500],
-                    backgroundColor: '#dc3545', // Vermelho para despesas
-                    borderColor: '#dc3545',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Valor (R$)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Mês'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: false
-                    }
-                }
-            }
-        });
-    });
-</script>
+    <div class="auth-panel d-flex align-items-center">
+        <div class="auth-form-card w-100">
+            <div class="eyebrow">Acesso</div>
+            <h2 class="section-title">Entrar no sistema</h2>
+            <p>Entre com seu usuario e senha para acessar o painel. Se esquecer a senha, o sistema agora pode iniciar o fluxo de recuperacao.</p>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Entrar</button>
+            </form>
+            <div class="auth-secondary-actions mt-3">
+                <a class="auth-link" href="{% url 'password_reset' %}">Esqueci minha senha</a>
+            </div>
+            <p class="mt-4 mb-0">Nao tem uma conta? <a class="auth-link" href="{% url 'register' %}">Criar cadastro agora</a>.</p>
+        </div>
+    </div>
+</section>
 {% endblock %}
+

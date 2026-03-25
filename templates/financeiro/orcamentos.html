@@ -1,50 +1,57 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Orcamentos | Gestao Financeira{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Planejamento de Orcamentos</h2>
+<section class="page-hero">
+    <div class="eyebrow">Planejamento</div>
+    <h1 class="hero-title">Orcamentos mensais com leitura simples e direta.</h1>
+    <p class="hero-copy">Defina limites por categoria e mantenha um painel de planejamento coerente com a operacao real do seu dinheiro.</p>
+</section>
 
-<div class="row">
-    <div class="col-md-5 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Novo orcamento mensal</h3>
-            </div>
-            <div class="card-body">
-                <form method="post" class="form-container p-0 m-0 bg-transparent border-0">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary w-100">Salvar orcamento</button>
-                </form>
+<div class="form-layout-grid">
+    <section class="form-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Novo orcamento</h2>
+                <p>Associe um limite a uma categoria em um periodo especifico.</p>
             </div>
         </div>
-    </div>
+        <div class="card-body-pad">
+            <form method="post" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Salvar orcamento</button>
+            </form>
+        </div>
+    </section>
 
-    <div class="col-md-7 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Orcamentos cadastrados</h3>
-            </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    {% for orcamento in orcamentos %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="fw-semibold">{{ orcamento.categoria.nome }}</div>
-                            <small class="text-muted">{{ orcamento.mes }}/{{ orcamento.ano }} | Limite: R$ {{ orcamento.limite|floatformat:2 }}</small>
-                        </div>
-                        <form action="{% url 'deletar_orcamento' orcamento.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
-                                Deletar
-                            </button>
-                        </form>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-center text-muted">Nenhum orcamento cadastrado.</li>
-                    {% endfor %}
-                </ul>
+    <section class="surface-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Orcamentos cadastrados</h2>
+                <p>Visao consolidada dos limites planejados.</p>
             </div>
         </div>
-    </div>
+        <div class="card-body-pad">
+            <div class="stack-list">
+                {% for orcamento in orcamentos %}
+                <div class="stack-item">
+                    <div>
+                        <strong>{{ orcamento.categoria.nome }}</strong>
+                        <small>{{ orcamento.mes }}/{{ orcamento.ano }} | Limite: R$ {{ orcamento.limite|floatformat:2 }}</small>
+                    </div>
+                    <form action="{% url 'deletar_orcamento' orcamento.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">Deletar</button>
+                    </form>
+                </div>
+                {% empty %}
+                <div class="empty-state">Nenhum orcamento cadastrado.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
+

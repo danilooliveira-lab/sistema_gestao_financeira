@@ -132,6 +132,7 @@ def resumo_dashboard(usuario):
     hoje = timezone.localdate()
     transacoes = transacoes_do_usuario(usuario)
     contas = contas_do_usuario(usuario)
+    categorias = categorias_do_usuario(usuario)
 
     total_receitas = _sum_or_zero(transacoes, tipo="receita")
     total_despesas = _sum_or_zero(transacoes, tipo="despesa")
@@ -167,7 +168,11 @@ def resumo_dashboard(usuario):
         "saldo": saldo,
         "saldo_inicial_total": saldo_inicial_total,
         "patrimonio_total": patrimonio_total,
+        "contas_total": contas.count(),
+        "categorias_total": categorias.count(),
+        "transacoes_total": transacoes.count(),
         "contas_ativas": contas.filter(ativa=True).count(),
+        "precisa_onboarding": not contas.exists() or not transacoes.exists(),
         "transacoes_recentes": transacoes.order_by("-data", "-id")[:5],
         "contas_resumo": contas_resumo,
         "receitas_mes": receitas_mes,

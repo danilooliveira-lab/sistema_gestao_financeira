@@ -1,12 +1,45 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Cadastro | Gestao Financeira{% endblock %}
 
 {% block content %}
-<div class="form-login-register">
-  <h2 class="text-center mb-4">Cadastro</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary w-100 mt-3">Registrar</button>
-  </form>
-</div>
+<section class="auth-shell">
+    <aside class="auth-aside">
+        <div class="auth-display">
+            <div class="eyebrow text-white">Novo acesso</div>
+            <h1 class="hero-title">Crie sua conta e entre em um painel financeiro mais completo.</h1>
+            <p class="hero-copy">A estrutura atual do sistema ja suporta contas, categorias, orcamentos, metas e historico mensal. O cadastro e a porta de entrada para tudo isso.</p>
+
+            <div class="mini-kpis mt-4">
+                <div class="mini-kpi">
+                    <span>Organizacao</span>
+                    <strong>Contas e categorias</strong>
+                </div>
+                <div class="mini-kpi">
+                    <span>Planejamento</span>
+                    <strong>Orcamentos mensais</strong>
+                </div>
+                <div class="mini-kpi">
+                    <span>Objetivos</span>
+                    <strong>Metas financeiras</strong>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="auth-panel d-flex align-items-center">
+        <div class="auth-form-card w-100">
+            <div class="eyebrow">Cadastro</div>
+            <h2 class="section-title">Criar conta</h2>
+            <p>Preencha seus dados principais para criar uma conta mais completa, com nome, email e identificacao pessoal desde o inicio.</p>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Registrar</button>
+            </form>
+            <p class="mt-4 mb-0">Ja possui acesso? <a class="auth-link" href="{% url 'login' %}">Voltar para o login</a>.</p>
+        </div>
+    </div>
+</section>
 {% endblock %}
+

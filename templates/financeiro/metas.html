@@ -1,50 +1,57 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Metas | Gestao Financeira{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Metas Financeiras</h2>
+<section class="page-hero">
+    <div class="eyebrow">Objetivos</div>
+    <h1 class="hero-title">Metas financeiras com foco e progresso visivel.</h1>
+    <p class="hero-copy">Transforme objetivos em acompanhamento concreto, com valor alvo, valor atual, prazo e status operacional.</p>
+</section>
 
-<div class="row">
-    <div class="col-md-5 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Nova meta</h3>
-            </div>
-            <div class="card-body">
-                <form method="post" class="form-container p-0 m-0 bg-transparent border-0">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary w-100">Salvar meta</button>
-                </form>
+<div class="form-layout-grid">
+    <section class="form-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Nova meta</h2>
+                <p>Cadastre um objetivo e acompanhe a distancia ate ele.</p>
             </div>
         </div>
-    </div>
+        <div class="card-body-pad">
+            <form method="post" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Salvar meta</button>
+            </form>
+        </div>
+    </section>
 
-    <div class="col-md-7 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Minhas metas</h3>
-            </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    {% for meta in metas %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="fw-semibold">{{ meta.nome }}</div>
-                            <small class="text-muted">Atual: R$ {{ meta.valor_atual|floatformat:2 }} | Alvo: R$ {{ meta.valor_alvo|floatformat:2 }} | {{ meta.get_status_display }}</small>
-                        </div>
-                        <form action="{% url 'deletar_meta' meta.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
-                                Deletar
-                            </button>
-                        </form>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-center text-muted">Nenhuma meta cadastrada.</li>
-                    {% endfor %}
-                </ul>
+    <section class="surface-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Metas cadastradas</h2>
+                <p>Monitore objetivos ativos, pausados ou concluidos.</p>
             </div>
         </div>
-    </div>
+        <div class="card-body-pad">
+            <div class="stack-list">
+                {% for meta in metas %}
+                <div class="stack-item">
+                    <div>
+                        <strong>{{ meta.nome }}</strong>
+                        <small>Atual: R$ {{ meta.valor_atual|floatformat:2 }} | Alvo: R$ {{ meta.valor_alvo|floatformat:2 }} | {{ meta.get_status_display }}</small>
+                    </div>
+                    <form action="{% url 'deletar_meta' meta.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">Deletar</button>
+                    </form>
+                </div>
+                {% empty %}
+                <div class="empty-state">Nenhuma meta cadastrada.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
+

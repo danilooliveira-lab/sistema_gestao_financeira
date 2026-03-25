@@ -1,48 +1,66 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Categorias | Gestao Financeira{% endblock %}
 
 {% block content %}
-  <h2 class="mb-4">Gerenciar Categorias</h2>
+<section class="page-hero">
+    <div class="eyebrow">Classificacao</div>
+    <h1 class="hero-title">Categorias limpas para relatorios melhores.</h1>
+    <p class="hero-copy">Organize receitas e despesas com mais clareza para sustentar filtros, historicos e orcamentos mensais. Voce nao precisa criar uma categoria nova a cada conta de luz: o ideal e reutilizar categorias como Moradia e contas e variar apenas a descricao do lancamento.</p>
+</section>
 
-  <div class="row">
-      <div class="col-md-5 mb-4">
-          <div class="card shadow-sm">
-              <div class="card-header">
-                <h3>Adicionar Nova</h3>
-              </div>
-              <div class="card-body">
-                <form method="post" class="form-container p-0 m-0 bg-transparent border-0">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary w-100">Salvar</button>
-                </form>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-md-7 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-              <h3>Minhas Categorias</h3>
-            </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    {% for categoria in categorias %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ categoria.nome }}
-                            
-                            <form action="{% url 'deletar_categoria' categoria.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
-                                    Deletar
-                                </button>
-                            </form>
-                        </li>
-                    {% empty %}
-                        <li class="list-group-item text-center text-muted">Nenhuma categoria cadastrada.</li>
-                    {% endfor %}
-                </ul>
+<div class="form-layout-grid">
+    <section class="form-card">
+        <div class="card-head card-head-compact">
+            <div>
+                <h2 class="section-title">Nova categoria</h2>
+                <p>Crie uma classificacao reutilizavel para seus lancamentos, nao um item isolado para cada despesa.</p>
             </div>
         </div>
-      </div>
-  </div>
+        <div class="card-body-pad">
+            <div class="card-head-actions mb-3">
+                <form action="{% url 'restaurar_categorias_iniciais' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary btn-soft">Restaurar categorias iniciais</button>
+                </form>
+            </div>
+            <div class="list-callout mb-3">
+                Exemplos uteis: Moradia e contas, Alimentacao, Transporte, Saude, Lazer, Educacao e Salario.
+            </div>
+            <form method="post" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Salvar categoria</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="surface-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Categorias cadastradas</h2>
+                <p>Base de classificacao usada em transacoes e orcamentos. Quanto mais enxuta e previsivel, melhor fica a experiencia.</p>
+            </div>
+        </div>
+        <div class="card-body-pad">
+            <div class="stack-list">
+                {% for categoria in categorias %}
+                <div class="stack-item">
+                    <div>
+                        <strong>{{ categoria.nome }}</strong>
+                        <small>Disponivel para relatorios e planejamento.</small>
+                    </div>
+                    <form action="{% url 'deletar_categoria' categoria.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">Deletar</button>
+                    </form>
+                </div>
+                {% empty %}
+                <div class="empty-state">Nenhuma categoria cadastrada.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
+

@@ -1,50 +1,65 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Contas | Gestao Financeira{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Gerenciar Contas</h2>
+<section class="page-hero">
+    <div class="eyebrow">Estrutura financeira</div>
+    <h1 class="hero-title">Contas bem organizadas, patrimonio mais claro.</h1>
+    <p class="hero-copy">Cadastre onde seu dinheiro circula e mantenha a base do sistema pronta para analises, metas e lancamentos mais confiaveis. A ideia aqui e registrar cada origem real de dinheiro uma vez, para nao perder tempo escolhendo estruturas confusas depois.</p>
+</section>
 
-<div class="row">
-    <div class="col-md-5 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Adicionar nova conta</h3>
-            </div>
-            <div class="card-body">
-                <form method="post" class="form-container p-0 m-0 bg-transparent border-0">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary w-100">Salvar conta</button>
-                </form>
+<div class="form-layout-grid">
+    <section class="form-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Nova conta</h2>
+                <p>Defina nome, tipo, saldo inicial e status da conta. Use nomes simples para localizar rapido no lancamento.</p>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-7 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="h5 mb-0">Minhas contas</h3>
+        <div class="card-body-pad">
+            <div class="list-callout mb-3">
+                Exemplos bons de nome: Nubank, Itau, Carteira, Caixa da loja, Reserva. Evite nomes vagos que dificultem o uso diario.
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    {% for conta in contas %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="fw-semibold">{{ conta.nome }}</div>
-                            <small class="text-muted">{{ conta.get_tipo_display }} | Saldo inicial: R$ {{ conta.saldo_inicial|floatformat:2 }} | {% if conta.ativa %}Ativa{% else %}Inativa{% endif %}</small>
+            <form method="post" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Salvar conta</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="surface-card">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title">Minhas contas</h2>
+                <p>Uma visao compacta das estruturas cadastradas.</p>
+            </div>
+        </div>
+        <div class="card-body-pad">
+            <div class="stack-list">
+                {% for conta in contas %}
+                <div class="stack-item">
+                    <div>
+                        <strong>{{ conta.nome }}</strong>
+                        <small>{{ conta.get_tipo_display }} | Saldo inicial: R$ {{ conta.saldo_inicial|floatformat:2 }}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="pill-badge {% if conta.ativa %}pill-success{% else %}pill-neutral{% endif %} mb-2">
+                            {% if conta.ativa %}Ativa{% else %}Inativa{% endif %}
                         </div>
                         <form action="{% url 'deletar_conta' conta.id %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
-                                Deletar
-                            </button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">Deletar</button>
                         </form>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-center text-muted">Nenhuma conta cadastrada.</li>
-                    {% endfor %}
-                </ul>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">Nenhuma conta cadastrada.</div>
+                {% endfor %}
             </div>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock %}
+

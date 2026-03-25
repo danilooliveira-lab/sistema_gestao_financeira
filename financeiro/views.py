@@ -1,13 +1,22 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_POST
 
-from .forms import CategoriaForm, ContaForm, MetaFinanceiraForm, OrcamentoMensalForm, TransacaoForm
+from .forms import (
+    CategoriaForm,
+    ContaForm,
+    LoginUsuarioForm,
+    MetaFinanceiraForm,
+    OrcamentoMensalForm,
+    PerfilUsuarioForm,
+    RegistroUsuarioForm,
+    TransacaoForm,
+)
 from .models import Categoria, Conta, MetaFinanceira, OrcamentoMensal, Transacao
 from .selectors import (
     categorias_do_usuario,
@@ -19,31 +28,91 @@ from .selectors import (
     resumo_dashboard,
 )
 from .services import (
+    CATEGORIAS_INICIAIS,
+    garantir_categorias_iniciais,
     criar_categoria_para_usuario,
     criar_conta_para_usuario,
     criar_meta_para_usuario,
     criar_orcamento_para_usuario,
     criar_transacao_para_usuario,
+    obter_ou_criar_categoria_para_usuario,
     remover_recurso_do_usuario,
     usuario_possui_conta_ativa,
 )
 
 
 class RegisterView(generic.CreateView):
-    form_class = UserCreationForm
+    form_class = RegistroUsuarioForm
     template_name = "registration/register.html"
     success_url = reverse_lazy("dashboard")
 
     def form_valid(self, form):
         self.object = form.save()
+        garantir_categorias_iniciais(self.object)
         login(self.request, self.object)
         messages.success(self.request, "Conta criada com sucesso.")
         return redirect(self.get_success_url())
 
 
+class CustomLoginView(LoginView):
+    authentication_form = LoginUsuarioForm
+    template_name = "registration/login.html"
+    redirect_authenticated_user = True
+
+
 @login_required
 def dashboard(request):
+    _, categorias_criadas = garantir_categorias_iniciais(request.user)
+    if categorias_criadas:
+        messages.success(request, "Categorias iniciais adicionadas automaticamente para facilitar seus primeiros lancamentos.")
     return render(request, "financeiro/dashboard.html", resumo_dashboard(request.user))
+
+
+@login_required
+def perfil_usuario(request):
+    if request.method == "POST":
+        form = PerfilUsuarioForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Perfil atualizado com sucesso.")
+            return redirect("perfil_usuario")
+        messages.error(request, "Nao foi possivel atualizar o perfil. Verifique os dados informados.")
+    else:
+        form = PerfilUsuarioForm(instance=request.user)
+
+    return render(
+        request,
+        "financeiro/perfil.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+def guia_uso(request):
+    contexto = resumo_dashboard(request.user)
+    contexto["passos_iniciais"] = [
+        {
+            "titulo": "Cadastre suas contas primeiro",
+            "descricao": "Comece com as contas que voce realmente usa no dia a dia: banco principal, carteira, reserva ou caixa.",
+            "acao": "gerenciar_contas",
+            "rotulo": "Abrir contas",
+        },
+        {
+            "titulo": "Use categorias amplas e reutilizaveis",
+            "descricao": "Em vez de criar uma categoria para cada gasto, use grupos como Moradia e contas, Alimentacao e Transporte.",
+            "acao": "gerenciar_categorias",
+            "rotulo": "Revisar categorias",
+        },
+        {
+            "titulo": "Lance transacoes com descricao real",
+            "descricao": "A descricao deve explicar o evento real, como Conta de luz abril ou Mercado do mes. Categoria e conta entram como apoio.",
+            "acao": "adicionar_transacao",
+            "rotulo": "Adicionar transacao",
+        },
+    ]
+    return render(request, "financeiro/guia_uso.html", contexto)
 
 
 @login_required
@@ -73,6 +142,10 @@ def deletar_conta(request, id):
 
 @login_required
 def gerenciar_categorias(request):
+    _, categorias_criadas = garantir_categorias_iniciais(request.user)
+    if categorias_criadas:
+        messages.success(request, "Categorias iniciais adicionadas automaticamente.")
+
     if request.method == "POST":
         form = CategoriaForm(request.POST, user=request.user)
         if form.is_valid():
@@ -86,6 +159,27 @@ def gerenciar_categorias(request):
     categorias = categorias_do_usuario(request.user)
     context = {"form": form, "categorias": categorias}
     return render(request, "financeiro/categorias.html", context)
+
+
+@login_required
+@require_POST
+def restaurar_categorias_iniciais(request):
+    categorias_existentes = set(categorias_do_usuario(request.user).values_list("nome", flat=True))
+    _, categorias_criadas = garantir_categorias_iniciais(request.user)
+
+    if categorias_criadas:
+        messages.success(request, "Categorias iniciais criadas com sucesso.")
+    else:
+        criadas = 0
+        for nome in CATEGORIAS_INICIAIS:
+            if nome not in categorias_existentes:
+                Categoria.objects.create(usuario=request.user, nome=nome)
+                criadas += 1
+        if criadas:
+            messages.success(request, f"{criadas} categorias iniciais foram adicionadas.")
+        else:
+            messages.info(request, "As categorias iniciais ja estao disponiveis na sua conta.")
+    return redirect("gerenciar_categorias")
 
 
 @login_required
@@ -182,15 +276,33 @@ def adicionar_transacao(request):
         messages.error(request, "Cadastre ao menos uma conta ativa antes de lancar transacoes.")
         return redirect("gerenciar_contas")
 
+    _, categorias_criadas = garantir_categorias_iniciais(request.user)
+    if categorias_criadas:
+        messages.success(request, "Categorias iniciais adicionadas automaticamente para agilizar o primeiro lancamento.")
+
+    initial_data = {
+        "conta": request.session.get("ultima_conta_id") or "",
+        "categoria": request.session.get("ultima_categoria_id") or "",
+        "tipo": request.session.get("ultimo_tipo") or "despesa",
+        "recorrente": request.session.get("ultima_recorrencia") or False,
+    }
+
     if request.method == "POST":
-        form = TransacaoForm(request.POST, user=request.user)
+        form = TransacaoForm(request.POST, user=request.user, initial_data=initial_data)
         if form.is_valid():
-            criar_transacao_para_usuario(form, request.user)
+            transacao = criar_transacao_para_usuario(form, request.user)
+            request.session["ultima_conta_id"] = transacao.conta_id
+            request.session["ultima_categoria_id"] = transacao.categoria_id or ""
+            request.session["ultimo_tipo"] = transacao.tipo
+            request.session["ultima_recorrencia"] = transacao.recorrente
+            if request.POST.get("salvar_e_continuar") == "1":
+                messages.success(request, "Transacao adicionada. O formulario foi mantido pronto para o proximo lancamento.")
+                return redirect("adicionar_transacao")
             messages.success(request, "Transacao adicionada com sucesso.")
             return redirect("lista_transacoes")
         messages.error(request, "Nao foi possivel salvar a transacao. Verifique os dados informados.")
     else:
-        form = TransacaoForm(user=request.user)
+        form = TransacaoForm(user=request.user, initial_data=initial_data)
 
     return render(
         request,
@@ -199,6 +311,7 @@ def adicionar_transacao(request):
             "form": form,
             "form_title": "Adicionar Nova Transacao",
             "submit_label": "Salvar Transacao",
+            "modo_rapido": True,
         },
     )
 
@@ -210,7 +323,11 @@ def editar_transacao(request, id):
     if request.method == "POST":
         form = TransacaoForm(request.POST, user=request.user, instance=transacao)
         if form.is_valid():
-            form.save()
+            transacao = form.save(commit=False)
+            nova_categoria = form.cleaned_data.get("nova_categoria")
+            if nova_categoria:
+                transacao.categoria = obter_ou_criar_categoria_para_usuario(nova_categoria, request.user)
+            transacao.save()
             messages.success(request, "Transacao atualizada com sucesso.")
             return redirect("lista_transacoes")
         messages.error(request, "Nao foi possivel atualizar a transacao. Verifique os dados informados.")
@@ -221,6 +338,7 @@ def editar_transacao(request, id):
         "form": form,
         "form_title": "Editar Transacao",
         "submit_label": "Salvar Alteracoes",
+        "modo_rapido": False,
     }
     return render(request, "financeiro/form_transacao.html", context)
 
