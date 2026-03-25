@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Controle Financeiro</title>
+    <title>{% block title %}Meu Controle Financeiro{% endblock %}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -14,7 +14,6 @@
 </head>
 
 <body>
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="/">Controle Financeiro</a>
@@ -29,7 +28,16 @@
                         <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lista_transacoes' %}">Transações</a>
+                        <a class="nav-link" href="{% url 'gerenciar_contas' %}">Contas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'gerenciar_orcamentos' %}">Orcamentos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'gerenciar_metas' %}">Metas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_transacoes' %}">Transacoes</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'gerenciar_categorias' %}">Categorias</a>
@@ -38,7 +46,7 @@
                         <form action="{% url 'logout' %}" method="post" class="d-flex">
                             {% csrf_token %}
                             <span class="navbar-text text-white-50 me-2">
-                                Olá, {{ user.username }}
+                                Ola, {{ user.username }}
                             </span>
                             <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
                         </form>
@@ -57,6 +65,17 @@
     </nav>
 
     <main class="container">
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Gerenciar Contas</h2>
+
+<div class="row">
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Adicionar nova conta</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" class="form-container p-0 m-0 bg-transparent border-0">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">Salvar conta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Minhas contas</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for conta in contas %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">{{ conta.nome }}</div>
+                            <small class="text-muted">{{ conta.get_tipo_display }} | Saldo inicial: R$ {{ conta.saldo_inicial|floatformat:2 }} | {% if conta.ativa %}Ativa{% else %}Inativa{% endif %}</small>
+                        </div>
+                        <form action="{% url 'deletar_conta' conta.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
+                                Deletar
+                            </button>
+                        </form>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center text-muted">Nenhuma conta cadastrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

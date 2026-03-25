@@ -32,7 +32,7 @@
                             
                             <form action="{% url 'deletar_categoria' categoria.id %}" method="post">
                                 {% csrf_token %}
-                                <button typed="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza?');">
                                     Deletar
                                 </button>
                             </form>

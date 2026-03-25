@@ -1,126 +1,86 @@
-# 💰 Aplicativo de Controle Financeiro Pessoal (MVP)
+# Aplicativo de Controle Financeiro Pessoal
 
-Este é um **projeto acadêmico full-stack** desenvolvido com **Django** para controle financeiro pessoal.  
-O objetivo é oferecer uma ferramenta **simples, segura e intuitiva** para gerenciar receitas e despesas, com foco total na **privacidade dos dados do usuário**.
+Projeto academico em Django para gestao financeira pessoal. Esta versao inclui a Fase 4 de evolucao de produto: planejamento financeiro com orcamentos mensais, metas, indicadores do mes e historico consolidado no dashboard.
 
----
+## Stack atual
 
-## 🏛️ Contexto Acadêmico e Social
+- Python
+- Django
+- Django ORM
+- SQLite para desenvolvimento
+- HTML, CSS e Bootstrap 5
 
-Este projeto foi desenvolvido como parte da disciplina **Programacao Orientada a Objetos**, do 4º semestre do curso de **Análise e Desenvolvimento de Sistemas** da **Universidade de Cuiabá**.
+## Estrutura real do projeto
 
-O sistema está alinhado ao **ODS 8 (Trabalho Decente e Crescimento Econômico)** da ONU, atuando como uma ferramenta de **alfabetização e empoderamento financeiro**.  
-Ele busca apoiar **jovens trabalhadores e microempreendedores**, ajudando-os a tomar decisões baseadas em dados e alcançar maior estabilidade econômica.
-
----
-
-## ✨ Funcionalidades Principais
-
-- 🔐 **Autenticação Segura** — Registro, Login e Logout com criptografia nativa do Django.  
-- 🧱 **Privacidade Total** — Cada usuário só acessa os próprios dados (arquitetura multi-tenant).  
-- 📊 **Dashboard Dinâmico** — Exibe saldo atual, total de receitas e despesas.  
-- 🗂️ **Gestão de Categorias** — CRUD completo de categorias personalizadas.  
-- 💸 **Gestão de Transações** — CRUD completo de receitas e despesas.  
-- 🧠 **Formulário Inteligente** — Mostra apenas categorias criadas pelo usuário logado.  
-- 📱 **Interface Responsiva** — Desenvolvida com Bootstrap 5, adaptável a qualquer dispositivo.  
-
----
-
-## 💻 Tecnologias Utilizadas
-
-### **Back-End**
-- **Python**
-- **Django**
-- **Django ORM**
-- **SQLite** (para ambiente de desenvolvimento)
-
-### **Front-End**
-- **HTML5**
-- **CSS3**
-- **Bootstrap 5**
-- **Django Template Language (DTL)**
-
-### **Segurança**
-- Sistema de autenticação nativo do Django  
-- Proteção CSRF em todos os formulários  
-- Filtragem de dados com `filter(usuario=request.user)` para isolamento completo  
-
----
-
-## 🧭 Estrutura do Projeto
-
-/controle_financeiro/  
-│  
-├── core/ # App principal (transações, categorias, views)  
-├── users/ # App de autenticação e cadastro de usuários  
-├── templates/ # HTMLs do Django Template Language  
-├── static/ # Arquivos estáticos (CSS, JS, imagens)  
-│ └── img/readme/ # Imagens utilizadas neste README  
-├── db.sqlite3 # Banco de dados local  
-├── manage.py # Gerenciador principal do Django  
-└── requirements.txt # Dependências do projeto
-
-
----
-
-## 1️⃣ Clonar o Repositório
-```bash
-git clone https://github.com/danilooliveira-lab/sistema_gestao_financeira
-cd sistema_gestao_financeira ou o diretorio escolhido
+```text
+sistema_gestao_financeira/
+|-- config/
+|-- financeiro/
+|-- static/
+|-- templates/
+|-- manage.py
+|-- requirements.txt
+`-- README.md
 ```
 
-### 2️⃣ Criar e Ativar o Ambiente Virtual (Venv)
+## Melhorias da Fase 4
 
-Ativar no Windows
-```bash
-.\venv\Scripts\activate
+- Configuracao sensivel movida para variaveis de ambiente.
+- `DEBUG`, `SECRET_KEY`, `ALLOWED_HOSTS` e fuso configuraveis.
+- Exclusoes protegidas por `POST`.
+- Feedback de sucesso e erro com mensagens no frontend.
+- Validacao amigavel para categoria duplicada.
+- Modelagem de `Conta` com tipo, saldo inicial e status.
+- `Transacao` agora suporta conta, observacao e recorrencia.
+- Dashboard com patrimonio total e resumo por conta.
+- Consultas extraidas para `selectors.py` e operacoes para `services.py`.
+- Orcamento mensal por categoria.
+- Metas financeiras com valor alvo, valor atual e status.
+- Dashboard com receitas/despesas do mes, historico e resumos de planejamento.
+- Filtros de conta, tipo, recorrencia e busca textual na listagem de transacoes.
+- Paginacao da listagem de transacoes.
+- Testes cobrindo autenticacao, isolamento de dados, seletores, paginacao e planejamento.
+- `requirements.txt` reduzido ao que o projeto realmente usa.
+
+## Configuracao do ambiente
+
+Crie um arquivo `.env` na raiz do projeto com algo como:
+
+```env
+DJANGO_SECRET_KEY=troque-esta-chave-em-producao
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+DJANGO_TIME_ZONE=America/Sao_Paulo
 ```
-Ativar no Mac/Linux
-```bash
-source venv/bin/activate
-```
-### 3️⃣ Instalar as Dependências
+
+## Como rodar
+
+1. Crie e ative um ambiente virtual.
+2. Instale as dependencias:
+
 ```bash
 pip install -r requirements.txt
 ```
-### 4️⃣ Aplicar as Migrações do Banco
+
+3. Gere e aplique as migracoes:
+
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
-### 5️⃣ Criar um Superusuário (Admin)
+
+4. Execute os testes:
+
 ```bash
-python manage.py createsuperuser
+python manage.py test
 ```
-### 6️⃣ Executar o Servidor
+
+5. Suba o servidor:
+
 ```bash
 python manage.py runserver
 ```
-### 7️⃣ Acessar o Sistema  
-🌐 Aplicativo: http://127.0.0.1:8000/  
 
-🔑 Painel Admin: http://127.0.0.1:8000/admin/  
+## Proxima etapa
 
-
-  
-## 🖼️ Prévia do Projeto
-
-**Abaixo estão algumas capturas de tela do sistema em funcionamento:**
-
-**🔐 Tela de Login**
-![Tela de Login](./static/img/readme/login.png)
-
-**📊 Dashboard**
-![Dashboard](./static/img/readme/dashboard.png)
-
-**💸 Aba de Transações**
-![Transações](./static/img/readme/transacoes.png)
-
-**🗂️ Aba de Categorias**
-![Categorias](./static/img/readme/categorias.png)
-
-## 🧑‍💻 Autores
-
-👨‍🎓 **Danilo Oliveira**  - [danilooliveira-lab](https://www.github.com/danilooliveira-lab)  
-👩‍🎓 **Marina Kleinschmitt**  - [marinakleinschmitt](https://www.github.com/marinakleinschmitt)  
-👨‍🎓 **André Araújo** - [andreburro](https://www.github.com/andreburro)  
-
+A Fase 5 deve atacar acabamento de produto e distribuicao: UX melhor, automacoes de recorrencia, importacao, exportacao e preparacao para deploy.

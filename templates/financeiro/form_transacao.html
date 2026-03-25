@@ -5,13 +5,13 @@
   <div class="col-md-8 mx-auto">
     <div class="card shadow-sm">
       <div class="card-header">
-        <h2>Adicionar Nova Transação</h2>
+        <h2>{{ form_title|default:"Adicionar Nova Transacao" }}</h2>
       </div>
       <div class="card-body">
         <form method="post" class="form-container">
           {% csrf_token %}
           {{ form.as_p }}
-          <button type="submit" class="btn btn-primary w-100 mt-3">Salvar Transação</button>
+          <button type="submit" class="btn btn-primary w-100 mt-3">{{ submit_label|default:"Salvar Transacao" }}</button>
         </form>
       </div>
     </div>

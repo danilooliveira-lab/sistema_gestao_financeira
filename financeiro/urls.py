@@ -7,6 +7,15 @@ urlpatterns = [
 
 
     path('registrar/', views.RegisterView.as_view(), name='register'),
+
+    path('contas/', views.gerenciar_contas, name='gerenciar_contas'),
+    path('contas/deletar/<int:id>/', views.deletar_conta, name='deletar_conta'),
+
+    path('orcamentos/', views.gerenciar_orcamentos, name='gerenciar_orcamentos'),
+    path('orcamentos/deletar/<int:id>/', views.deletar_orcamento, name='deletar_orcamento'),
+
+    path('metas/', views.gerenciar_metas, name='gerenciar_metas'),
+    path('metas/deletar/<int:id>/', views.deletar_meta, name='deletar_meta'),
     
 
     path('categorias/', views.gerenciar_categorias, name='gerenciar_categorias'),
